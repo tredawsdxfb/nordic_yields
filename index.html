@@ -628,4 +628,189 @@
 
                 const strokeColor = isBullish ? 'text-emerald-500/80' : 'text-rose-500/80';
                 const badgeColor = isBullish 
-                    ?
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                    : 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+
+                card.innerHTML = `
+                    <div class="p-6 pb-4">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="px-2.5 py-1 rounded bg-slate-800 text-xs font-semibold text-slate-300">${item.pair}</span>
+                                <span class="ml-2 text-xs text-slate-400">${item.timeframe || '4H'}</span>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase border ${badgeColor}">${item.bias}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-brand-400 transition-colors">${item.title}</h3>
+                        <p class="text-slate-400 text-sm line-clamp-2">${item.desc}</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 border-y border-dark-border/60 my-auto flex justify-center items-center relative min-h-[140px]">
+                        <svg class="w-full h-24 ${strokeColor}" viewBox="0 0 300 100" fill="none" stroke="currentColor" stroke-width="2">
+                            ${svgPath}
+                        </svg>
+                        <span class="absolute bottom-2 right-2 text-[10px] text-slate-500 font-mono">Nordic Yields Engine</span>
+                    </div>
+                    <div class="p-6 pt-4 flex items-center justify-between mt-auto">
+                        <div class="text-xs text-slate-400">
+                            Target: <span class="text-emerald-400 font-mono font-semibold">${item.target}</span>
+                        </div>
+                        <button onclick="openModal('${item.pair} Analysis', '${item.desc.replace(/'/g, "\\'")}', '${item.target}')" class="text-xs font-semibold text-brand-400 hover:text-brand-300 flex items-center gap-1">
+                            Expand Analysis <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function renderVIPSignals(data) {
+            const tbody = document.getElementById('vip-signals-table-body');
+            tbody.innerHTML = '';
+
+            data.forEach(sig => {
+                const isBuy = (sig.type || '').toUpperCase() === 'BUY';
+                const typeClass = isBuy ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400';
+                
+                let statusBadge = '';
+                const st = (sig.status || '').toLowerCase();
+                if (st.includes('target') || st.includes('tp') || st.includes('hit')) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center w-max gap-1"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> ${sig.status}</span>`;
+                } else if (st.includes('active')) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-brand-500/20 text-brand-400 border border-brand-500/30 flex items-center w-max gap-1"><i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> Active</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-700 text-slate-300 flex items-center w-max gap-1"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i> ${sig.status}</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/40 transition-colors';
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-white">${sig.pair}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 text-xs font-bold rounded ${typeClass}">${sig.type}</span></td>
+                    <td class="p-4 font-mono text-slate-300">${sig.entry}</td>
+                    <td class="p-4 font-mono text-slate-400">${sig.stop || sig.sl}</td>
+                    <td class="p-4 font-mono text-slate-300">${sig.target || sig.tp}</td>
+                    <td class="p-4 font-semibold text-slate-200">${sig.rr}</td>
+                    <td class="p-4">${statusBadge}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        async function refreshDataEngine() {
+            const tradeIdeasUrl = localStorage.getItem('ny_trade_ideas_url');
+            const vipSignalsUrl = localStorage.getItem('ny_vip_signals_url');
+
+            if (tradeIdeasUrl) {
+                try {
+                    const res = await fetch(tradeIdeasUrl);
+                    const text = await res.text();
+                    const data = parseCSV(text);
+                    if (data && data.length) {
+                        renderTradeIdeas(data);
+                        document.getElementById('trade-ideas-source-tag').innerText = 'Live Sheet';
+                        document.getElementById('trade-ideas-source-tag').className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono';
+                    }
+                } catch (e) {
+                    renderTradeIdeas(DEFAULT_TRADE_IDEAS);
+                }
+            } else {
+                renderTradeIdeas(DEFAULT_TRADE_IDEAS);
+            }
+
+            if (vipSignalsUrl) {
+                try {
+                    const res = await fetch(vipSignalsUrl);
+                    const text = await res.text();
+                    const data = parseCSV(text);
+                    if (data && data.length) {
+                        renderVIPSignals(data);
+                        document.getElementById('signals-source-tag').innerText = 'Live Sheet';
+                        document.getElementById('signals-source-tag').className = 'px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono';
+                    }
+                } catch (e) {
+                    renderVIPSignals(DEFAULT_VIP_SIGNALS);
+                }
+            } else {
+                renderVIPSignals(DEFAULT_VIP_SIGNALS);
+            }
+
+            const now = new Date();
+            document.getElementById('last-updated-time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function filterTradeIdeas(category, btn) {
+            currentCategory = category;
+            const tabs = document.querySelectorAll('.trade-tab');
+            tabs.forEach(t => {
+                t.classList.remove('bg-brand-600', 'text-white');
+                t.classList.add('bg-dark-card', 'text-slate-400');
+            });
+            btn.classList.remove('bg-dark-card', 'text-slate-400');
+            btn.classList.add('bg-brand-600', 'text-white');
+
+            const cards = document.querySelectorAll('.trade-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.classList.contains(category)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function openModal(title, desc, target) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerText = desc;
+            document.getElementById('modal-target').innerText = target;
+            document.getElementById('trade-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('trade-modal').classList.add('hidden');
+        }
+
+        function openAdminModal() {
+            document.getElementById('cfg-trade-ideas-url').value = localStorage.getItem('ny_trade_ideas_url') || '';
+            document.getElementById('cfg-vip-signals-url').value = localStorage.getItem('ny_vip_signals_url') || '';
+            document.getElementById('admin-modal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-modal').classList.add('hidden');
+        }
+
+        function saveAdminConfig() {
+            const ti = document.getElementById('cfg-trade-ideas-url').value.trim();
+            const vs = document.getElementById('cfg-vip-signals-url').value.trim();
+
+            if (ti) localStorage.setItem('ny_trade_ideas_url', ti);
+            else localStorage.removeItem('ny_trade_ideas_url');
+
+            if (vs) localStorage.setItem('ny_vip_signals_url', vs);
+            else localStorage.removeItem('ny_vip_signals_url');
+
+            closeAdminModal();
+            refreshDataEngine();
+        }
+
+        function clearAdminConfig() {
+            localStorage.removeItem('ny_trade_ideas_url');
+            localStorage.removeItem('ny_vip_signals_url');
+            document.getElementById('cfg-trade-ideas-url').value = '';
+            document.getElementById('cfg-vip-signals-url').value = '';
+            closeAdminModal();
+            refreshDataEngine();
+        }
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            refreshDataEngine();
+        });
+    </script>
+</body>
+</html>

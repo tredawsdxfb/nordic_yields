@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nordic Yields | Elite Trading Insights & Mentorship</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eefbff',
+                            100: '#d5f5ff',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#032b45',
+                            accent: '#10b981', // Emerald yield
+                            accentGold: '#f59e0b'
+                        },
+                        dark: {
+                            bg: '#080c14',
+                            card: '#0f172a',
+                            border: '#1e293b',
+                            hover: '#1e293b/80'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080c14;
+            color: #f8fafc;
+        }
+        .glow-accent {
+            box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.25);
+        }
+        .glow-emerald {
+            box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.25);
+        }
+        .glass-nav {
+            background: rgba(8, 12, 20, 0.85);
+            backdrop-filter: blur(12px);
+        }
+        .grid-pattern {
+            background-image: radial-gradient(rgba(30, 41, 59, 0.5) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white grid-pattern">
+
+    <!-- NAVIGATION BAR -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-dark-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <a href="#" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-accent flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                        <i data-lucide="trending-up" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold tracking-tight text-white block leading-none">NORDIC<span class="text-brand-400">YIELDS</span></span>
+                        <span class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold">Institutional Analytics</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Menu -->
+                <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+                    <a href="#trade-ideas" class="text-slate-300 hover:text-brand-400 transition-colors">Trade Ideas</a>
+                    <a href="#signals" class="text-slate-300 hover:text-brand-400 transition-colors flex items-center gap-1.5">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-accent opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-accent"></span>
+                        </span>
+                        VIP Signals
+                    </a>
+                    <a href="#copy-trading" class="text-slate-300 hover:text-brand-400 transition-colors">Copy Trading</a>
+                    <a href="#mentorship" class="text-slate-300 hover:text-brand-400 transition-colors">Mentorship</a>
+                </nav>
+
+                <!-- CTA Button & Admin Data Manager Trigger -->
+                <div class="hidden md:flex items-center space-x-3">
+                    <button onclick="openAdminModal()" title="Live Google Sheets / Data API Sync Config" class="p-2.5 rounded-lg border border-dark-border bg-dark-card hover:bg-slate-800 text-slate-300 hover:text-brand-400 transition flex items-center gap-1.5 text-xs font-semibold">
+                        <i data-lucide="database" class="w-4 h-4 text-brand-400"></i>
+                        <span>Live Sync</span>
+                    </button>
+                    <a href="#mentorship" class="px-5 py-2.5 rounded-lg text-sm font-semibold bg-brand-600 hover:bg-brand-500 text-white transition-all shadow-md glow-accent flex items-center gap-2">
+                        <span>Get Started</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center gap-2">
+                    <button onclick="openAdminModal()" class="p-2 rounded-lg text-slate-300 bg-dark-card border border-dark-border">
+                        <i data-lucide="database" class="w-5 h-5 text-brand-400"></i>
+                    </button>
+                    <button id="mobile-menu-btn" class="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-dark-card transition">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-dark-card border-b border-dark-border px-4 pt-2 pb-6 space-y-3">
+            <a href="#trade-ideas" class="block py-2 text-slate-300 hover:text-brand-400 font-medium">Trade Ideas</a>
+            <a href="#signals" class="block py-2 text-slate-300 hover:text-brand-400 font-medium">VIP Signals</a>
+            <a href="#copy-trading" class="block py-2 text-slate-300 hover:text-brand-400 font-medium">Copy Trading</a>
+            <a href="#mentorship" class="block py-2 text-slate-300 hover:text-brand-400 font-medium">Mentorship</a>
+            <a href="#mentorship" class="block w-full text-center py-3 rounded-lg bg-brand-600 text-white font-semibold">Get Started</a>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="pt-32 pb-20 md:pt-44 md:pb-32 relative overflow-hidden">
+        <!-- Radial Gradient background effects -->
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute top-1/3 right-10 w-[300px] h-[300px] bg-brand-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 text-brand-400 text-xs font-semibold uppercase tracking-wider mb-8">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                Precision Trading & Mentorship
+            </div>
+
+            <!-- Main Heading -->
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-6 max-w-4xl mx-auto leading-tight">
+                Master the Financial Markets with <span class="bg-gradient-to-r from-brand-400 via-brand-500 to-brand-accent bg-clip-text text-transparent">Institutional Logic</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="text-slate-400 text-base sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+                Actionable weekly market breakdowns, real-time VIP signals, fully automated copy trading, and dedicated 1-on-1 institutional mentorship until complete mastery.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
+                <a href="https://wa.me/34633909404?text=Hi%20Nordic%20Yields,%20I'm%20interested%20in%20joining%20VIP%20Signals." target="_blank" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold shadow-lg glow-accent transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="message-square" class="w-5 h-5"></i>
+                    <span>Get VIP Signals via WhatsApp</span>
+                </a>
+                <a href="#copy-trading" class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-dark-card hover:bg-slate-800 border border-dark-border text-slate-200 font-semibold transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="copy" class="w-5 h-5"></i>
+                    <span>Copy Our Trades</span>
+                </a>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-16 p-6 rounded-2xl bg-dark-card/60 border border-dark-border backdrop-blur-md">
+                <div>
+                    <p class="text-3xl font-bold text-white">78.4%</p>
+                    <p class="text-xs text-slate-400 uppercase tracking-wider mt-1">Win Rate</p>
+                </div>
+                <div>
+                    <p class="text-3xl font-bold text-brand-accent">+1,420%</p>
+                    <p class="text-xs text-slate-400 uppercase tracking-wider mt-1">Cumulative Gain</p>
+                </div>
+                <div>
+                    <p class="text-3xl font-bold text-white">2,400+</p>
+                    <p class="text-xs text-slate-400 uppercase tracking-wider mt-1">Active Traders</p>
+                </div>
+                <div>
+                    <p class="text-3xl font-bold text-brand-400">&lt; 8.5%</p>
+                    <p class="text-xs text-slate-400 uppercase tracking-wider mt-1">Max Drawdown</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WEEKLY TRADE IDEAS SECTION -->
+    <section id="trade-ideas" class="py-20 border-t border-dark-border/50 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+                <div>
+                    <div class="flex items-center gap-2 text-brand-400 text-sm font-semibold uppercase tracking-wider mb-2">
+                        <span>Market Analysis</span>
+                        <span id="trade-ideas-source-tag" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Local Data</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-white">Weekly Trade Breakdown</h2>
+                </div>
+                <!-- Filter Tabs -->
+                <div class="mt-4 md:mt-0 flex gap-2 overflow-x-auto pb-2 sm:pb-0">
+                    <button onclick="filterTradeIdeas('all', this)" class="trade-tab px-4 py-2 rounded-lg text-sm font-medium bg-brand-600 text-white transition">All Markets</button>
+                    <button onclick="filterTradeIdeas('forex', this)" class="trade-tab px-4 py-2 rounded-lg text-sm font-medium bg-dark-card border border-dark-border text-slate-400 hover:text-white transition">Forex</button>
+                    <button onclick="filterTradeIdeas('indices', this)" class="trade-tab px-4 py-2 rounded-lg text-sm font-medium bg-dark-card border border-dark-border text-slate-400 hover:text-white transition">Indices</button>
+                    <button onclick="filterTradeIdeas('crypto', this)" class="trade-tab px-4 py-2 rounded-lg text-sm font-medium bg-dark-card border border-dark-border text-slate-400 hover:text-white transition">Crypto</button>
+                </div>
+            </div>
+
+            <!-- Dynamic Cards Container -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="trade-ideas-grid">
+                <!-- Rendered dynamically via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- REAL-TIME VIP SIGNALS FEED -->
+    <section id="signals" class="py-20 bg-dark-card/40 border-t border-dark-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-10">
+                <div class="text-brand-400 text-sm font-semibold uppercase tracking-wider mb-2">Live Execution</div>
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Real-Time VIP Signal Stream</h2>
+                <p class="text-slate-400 mb-6">Instant trade alerts pushed directly from our institutional desk. Track live entry, targets, and trade status.</p>
+                
+                <!-- Direct WhatsApp Contact Banner -->
+                <div class="inline-flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-slate-200 max-w-xl mx-auto">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 rounded-lg bg-emerald-500 text-slate-950 font-bold">
+                            <i data-lucide="message-square" class="w-5 h-5"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-xs text-slate-400 uppercase font-semibold">Instant Access Desk</p>
+                            <p class="text-sm font-bold text-emerald-400">Join VIP Stream Directly</p>
+                        </div>
+                    </div>
+                    <a href="https://wa.me/34633909404?text=Hi%20Nordic%20Yields,%20I'm%20interested%20in%20joining%20VIP%20Signals." target="_blank" class="w-full sm:w-auto sm:ml-auto px-5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-md glow-emerald">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                        <span>Get VIP Signals via WhatsApp</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Signal Table Container -->
+            <div class="bg-dark-card border border-dark-border rounded-2xl overflow-hidden shadow-xl">
+                <div class="p-4 border-b border-dark-border bg-slate-900/50 flex items-center justify-between flex-wrap gap-4">
+                    <div class="flex items-center gap-3">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                        </span>
+                        <span class="text-sm font-semibold text-slate-200">Live Execution Terminal Engine</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs">
+                        <span id="signals-source-tag" class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Local Data</span>
+                        <span class="text-slate-400">Auto-Refreshed: <span id="last-updated-time" class="text-slate-200 font-mono">Just Now</span></span>
+                        <button onclick="refreshDataEngine()" title="Force Sync Data" class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-xs uppercase font-semibold text-slate-400 border-b border-dark-border bg-slate-950/40">
+                                <th class="p-4">Pair</th>
+                                <th class="p-4">Type</th>
+                                <th class="p-4">Entry</th>
+                                <th class="p-4">Stop Loss</th>
+                                <th class="p-4">Take Profit</th>
+                                <th class="p-4">R:R Ratio</th>
+                                <th class="p-4">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vip-signals-table-body" class="divide-y divide-dark-border/60 text-sm">
+                            <!-- Rendered dynamically via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COPY TRADING SECTION -->
+    <section id="copy-trading" class="py-20 border-t border-dark-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="text-brand-400 text-sm font-semibold uppercase tracking-wider mb-2">Automated Execution</div>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6">Hands-Free Institutional Copy Trading</h2>
+                    <p class="text-slate-400 mb-8 leading-relaxed">
+                        Connect your existing brokerage account via our ultra-low latency PAMM/MAM API architecture. Mirror our professional trades automatically with customizable lot sizes and strict equity protection risk parameters.
+                    </p>
+
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-start gap-3">
+                            <div class="p-1 rounded bg-brand-500/10 text-brand-400 mt-1">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold text-sm">Min. Equity Allocation</h4>
+                                <p class="text-slate-400 text-xs mt-0.5">Recommended starting capital: <span class="text-brand-400 font-bold">$1,000 USD</span> (Flexible lot scaling).</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="p-1 rounded bg-brand-500/10 text-brand-400 mt-1">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold text-sm">Performance Fee Structure</h4>
+                                <p class="text-slate-400 text-xs mt-0.5">Transparent <span class="text-white font-bold">20% High-Water Mark fee</span> charged monthly on net profits only.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="p-1 rounded bg-brand-500/10 text-brand-400 mt-1">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold text-sm">Non-Custodial Account Connect</h4>
+                                <p class="text-slate-400 text-xs mt-0.5">Your capital remains safely in your broker account at all times.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="https://wa.me/34633909404?text=Hello%21%20I%20would%20like%20to%20set%20up%20Copy%20Trading%20for%20my%20account." target="_blank" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-brand-accent hover:bg-emerald-600 text-slate-950 font-bold transition shadow-lg glow-emerald">
+                        <i data-lucide="link-2" class="w-5 h-5"></i>
+                        <span>Inquire Copy Trading Access</span>
+                    </a>
+                </div>
+
+                <!-- Stats Dashboard Box -->
+                <div class="bg-dark-card border border-dark-border rounded-2xl p-6 sm:p-8 relative">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-dark-border">
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Nordic Alpha Account</h3>
+                            <p class="text-xs text-slate-400">Verified Myfxbook / Equity Curve</p>
+                        </div>
+                        <span class="px-3 py-1 rounded bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">LIVE</span>
+                    </div>
+
+                    <!-- Performance Grid -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-slate-950 p-4 rounded-xl border border-dark-border">
+                            <span class="text-xs text-slate-400 block mb-1">Win Rate</span>
+                            <span class="text-2xl font-extrabold text-white">78.4%</span>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded-xl border border-dark-border">
+                            <span class="text-xs text-slate-400 block mb-1">Profit Factor</span>
+                            <span class="text-2xl font-extrabold text-brand-400">2.42</span>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded-xl border border-dark-border">
+                            <span class="text-xs text-slate-400 block mb-1">Avg Risk/Reward</span>
+                            <span class="text-2xl font-extrabold text-white">1 : 3.1</span>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded-xl border border-dark-border">
+                            <span class="text-xs text-slate-400 block mb-1">Max Drawdown</span>
+                            <span class="text-2xl font-extrabold text-slate-300">8.42%</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Progress Bar -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs text-slate-400">
+                            <span>Monthly Target (+15%)</span>
+                            <span class="text-emerald-400 font-semibold">+12.8% Achieved</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-brand-500 to-brand-accent rounded-full" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MENTORSHIP OPTIONS SECTION -->
+    <section id="mentorship" class="py-20 bg-dark-card/30 border-t border-dark-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="text-brand-400 text-sm font-semibold uppercase tracking-wider mb-2">Accelerate Your Edge</div>
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Structured Mentorship Plans</h2>
+                <p class="text-slate-400">From foundation mechanics to dedicated 1-on-1 coaching that stays with you until you achieve full market independence.</p>
+            </div>
+
+            <!-- Pricing Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Tier 1 -->
+                <div class="bg-dark-card border border-dark-border rounded-2xl p-8 flex flex-col hover:border-slate-700 transition relative">
+                    <h3 class="text-xl font-bold text-white mb-1">VIP Signals Pass</h3>
+                    <p class="text-slate-400 text-xs mb-4">Direct daily setup stream & trade management alerts via WhatsApp & Telegram.</p>
+                    <div class="text-3xl font-extrabold text-white mb-6">$99 <span class="text-xs text-slate-400 font-normal">/ month</span></div>
+
+                    <ul class="space-y-3 text-sm text-slate-300 mb-8 flex-1">
+                        <li class="flex items-center gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-brand-400"></i> Daily Forex & Index Signals</li>
+                        <li class="flex items-center gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-brand-400"></i> Entry, Stop Loss & 3 Targets</li>
+                        <li class="flex items-center gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-brand-400"></i> Risk Management Guidance</li>
+                        <li class="flex items-center gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-brand-400"></i> Direct WhatsApp Channel Access</li>
+                    </ul>
+
+                    <a href="https://wa.me/34633909404?text=Hi%20Nordic%20Yields,%20I'm%20interested%20in%20subscribing%20to%20the%20VIP%20Signals%20Pass." target="_blank" class="w-full py-3 rounded-xl border border-dark-border bg-slate-900 hover:bg-slate-800 text-white text-center font-semibold transition flex items-center justify-center gap-2">
+                        <i data-lucide="message-square" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Get VIP Signals via WhatsApp</span>
+                    </a>
+                </div>
+
+                <!-- Tier 2 -->
+                <div class="bg-dark-card border border-dark-border rounded-2xl p-8 flex flex-col hover:border-slate-700 transition relative">
+                    <h3 class="text-xl font-bold text-white mb-1">Group Mastermind</h3>
+                    <p class="text-slate-400 text-xs mb-4">Live weekly interactive trading sessions, daily signals, and direct group guidance.</p>
+                    <div class="text-3xl font-extrabold text-white mb-6">$299 <span class="text-xs text-slate-400 font-normal">/ quarterly</span></div>
+
+                    <ul class="space-y-3 text-sm text-slate-300 mb-8 flex-1">
+                        <li class="flex items-center gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-brand-accent"></i> Everything in VIP Signals Pass</li>
+                        <li class="flex items-center gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-brand-accent"></i> 2x Weekly Live Zoom Webinars</li>
+                        <li class="flex items-center gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-brand-accent"></i> Full HD Video Curriculum</li>
+                        <li class="flex items-center gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-brand-accent"></i> Proprietary Indicator Suite</li>
+                    </ul>
+
+                    <a href="https://wa.me/34633909404?text=Hi%20Nordic%20Yields,%20I'm%20interested%20in%20the%20Group%20Mastermind." target="_blank" class="w-full py-3 rounded-xl border border-dark-border bg-slate-900 hover:bg-slate-800 text-white text-center font-semibold transition flex items-center justify-center gap-2">
+                        <i data-lucide="message-square" class="w-4 h-4 text-emerald-400"></i>
+                        <span>Apply via WhatsApp</span>
+                    </a>
+                </div>
+
+                <!-- Tier 3 (Featured Lifetime Mentorship) -->
+                <div class="bg-dark-card border-2 border-brand-500 rounded-2xl p-8 flex flex-col relative glow-accent">
+                    <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-brand-500 text-slate-950 font-bold text-xs uppercase tracking-wider">
+                        Unlimited Mastery
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-1">1-on-1 VIP Mentorship</h3>
+                    <p class="text-slate-400 text-xs mb-4">No time limit. We guide and coach you directly until you thoroughly master technicals & fundamentals.</p>
+                    <div class="text-2xl font-extrabold text-white mb-1">$999 <span class="text-xs text-brand-400 font-bold uppercase tracking-wide block sm:inline mt-1 sm:mt-0">/ Lifetime Access</span></div>
+                    <p class="text-[11px] text-emerald-400 font-semibold mb-6 flex items-center gap-1">
+                        <i data-lucide="infinity" class="w-3.5 h-3.5"></i> Continuous support until complete mastery
+                    </p>
+
+                    <ul class="space-y-3 text-sm text-slate-300 mb-8 flex-1">
+                        <li class="flex items-center gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-brand-accent"></i> Unlimited 1-on-1 Private Mentorship Calls</li>
+                        <li class="flex items-center gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-brand-accent"></i> Tailored Technical & Fundamental Blueprint</li>
+                        <li class="flex items-center gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-brand-accent"></i> Real-time Trade Journal Audits & Fixes</li>
+                        <li class="flex items-center gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-brand-accent"></i> Direct VIP WhatsApp Priority Line</li>
+                        <li class="flex items-center gap-2.5"><i data-lucide="check-circle" class="w-4 h-4 text-brand-accent"></i> Lifetime Access to All Mastermind Systems</li>
+                    </ul>
+
+                    <a href="https://wa.me/34633909404?text=Hi%20Nordic%20Yields,%20I'm%20ready%20to%20enroll%20in%20the%201-on-1%20VIP%20Lifetime%20Mentorship." target="_blank" class="w-full py-3.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-center font-bold transition shadow-md flex items-center justify-center gap-2">
+                        <i data-lucide="message-circle" class="w-5 h-5"></i>
+                        <span>Enroll via WhatsApp</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER SECTION -->
+    <footer class="bg-slate-950 border-t border-dark-border mt-auto pt-16 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                <div class="md:col-span-1">
+                    <a href="#" class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center">
+                            <i data-lucide="trending-up" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <span class="text-lg font-bold text-white">NORDIC<span class="text-brand-400">YIELDS</span></span>
+                    </a>
+                    <p class="text-slate-400 text-xs leading-relaxed mb-4">
+                        High-precision institutional analysis, automated signal execution, and high-performance trading education.
+                    </p>
+                    <div class="flex space-x-4 text-slate-400">
+                        <a href="https://wa.me/34633909404?text=Hi%20Nordic%20Yields,%20I'm%20interested..." target="_blank" class="hover:text-emerald-400 transition"><i data-lucide="message-square" class="w-5 h-5"></i></a>
+                        <a href="#" class="hover:text-brand-400 transition"><i data-lucide="send" class="w-5 h-5"></i></a>
+                        <a href="#" class="hover:text-brand-400 transition"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-4">Navigation</h4>
+                    <ul class="space-y-2 text-xs text-slate-400">
+                        <li><a href="#trade-ideas" class="hover:text-white transition">Trade Ideas</a></li>
+                        <li><a href="#signals" class="hover:text-white transition">VIP Signals</a></li>
+                        <li><a href="#copy-trading" class="hover:text-white transition">Copy Trading</a></li>
+                        <li><a href="#mentorship" class="hover:text-white transition">Mentorship Options</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-4">Legal & Risk</h4>
+                    <ul class="space-y-2 text-xs text-slate-400">
+                        <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition">Risk Disclaimer</a></li>
+                        <li><a href="#" class="hover:text-white transition">Refund Policy</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-4">Contact Desk</h4>
+                    <p class="text-xs text-slate-400 mb-3">Direct WhatsApp & VIP Desk:</p>
+                    <a href="https://wa.me/34633909404?text=Hi%20Nordic%20Yields,%20I'm%20interested..." target="_blank" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold hover:bg-emerald-500/20 transition">
+                        <i data-lucide="message-square" class="w-4 h-4"></i>
+                        <span>Contact Desk via WhatsApp</span>
+                    </a>
+                    <p class="text-xs text-slate-400 font-mono mt-3">desk@nordicyields.com</p>
+                </div>
+            </div>
+
+            <div class="border-t border-dark-border/60 pt-8 text-center sm:text-left text-[11px] text-slate-500 leading-relaxed">
+                <p class="mb-2"><strong>Risk Disclosure:</strong> Trading foreign exchange, indices, and commodities on margin carries a high level of risk and may not be suitable for all investors. High leverage can work against you as well as for you. Before deciding to trade, you should carefully consider your investment objectives, level of experience, and risk appetite.</p>
+                <p>© 2026 Nordic Yields. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- TRADE ANALYSIS EXPAND MODAL -->
+    <div id="trade-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-dark-card border border-dark-border rounded-2xl max-w-lg w-full p-6 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <h3 id="modal-title" class="text-xl font-bold text-white mb-2">Trade Setup Details</h3>
+            <p id="modal-desc" class="text-slate-300 text-sm mb-6 leading-relaxed"></p>
+            
+            <div class="grid grid-cols-3 gap-3 bg-slate-950 p-4 rounded-xl border border-dark-border mb-6 font-mono text-center">
+                <div>
+                    <span class="text-[10px] text-slate-500 uppercase block">Entry</span>
+                    <span id="modal-entry" class="text-xs font-bold text-slate-200"></span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-slate-500 uppercase block">Target</span>
+                    <span id="modal-target" class="text-xs font-bold text-emerald-400"></span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-slate-500 uppercase block">Stop Loss</span>
+                    <span id="modal-stop" class="text-xs font-bold text-rose-400"></span>
+                </div>
+            </div>
+
+            <button onclick="closeModal()" class="w-full py-2.5 rounded-lg bg-brand-600 text-white font-semibold hover:bg-brand-500 transition">
+                Close Analysis
+            </button>
+        </div>
+    </div>
+
+    <!-- ADMIN LIVE DATA CONFIG MODAL -->
+    <div id="admin-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-dark-card border border-dark-border rounded-2xl max-w-xl w-full p-6 relative shadow-2xl">
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="flex items-center gap-3 mb-2">
+                <div class="p-2 rounded-lg bg-brand-500/10 text-brand-400">
+                    <i data-lucide="database" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white">Live Sync Configuration</h3>
+                    <p class="text-xs text-slate-400">Connect a Google Sheet or custom JSON endpoint for weekly updates</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 my-6 text-sm">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                        Trade Ideas CSV or JSON URL
+                    </label>
+                    <input type="text" id="cfg-trade-ideas-url" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv" class="w-full bg-slate-950 border border-dark-border rounded-lg px-3 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-brand-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                        VIP Signals CSV or JSON URL
+                    </label>
+                    <input type="text" id="cfg-vip-signals-url" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv" class="w-full bg-slate-950 border border-dark-border rounded-lg px-3 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-brand-500">
+                </div>
+
+                <div class="p-3 rounded-lg bg-slate-950 border border-dark-border/80 text-xs text-slate-400 space-y-1">
+                    <p class="font-bold text-slate-300">How to publish your Google Sheet:</p>
+                    <p>1. In Google Sheets, go to <strong>File &gt; Share &gt; Publish to web</strong>.</p>
+                    <p>2. Select your sheet tab and choose format: <strong>Comma-separated values (.csv)</strong>.</p>
+                    <p>3. Paste the URL above and click <strong>Save &amp; Sync Live Data</strong>.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="saveAdminConfig()" class="flex-1 py-2.5 rounded-lg bg-brand-600 text-white font-bold hover:bg-brand-500 transition flex items-center justify-center gap-2">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                    <span>Save &amp; Sync Live Data</span>
+                </button>
+                <button onclick="clearAdminConfig()" class="px-4 py-2.5 rounded-lg bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700 transition">
+                    Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Default local trade data (Fallback if no external Google Sheet / API configured)
+        const DEFAULT_TRADE_IDEAS = [
+            {
+                pair: "EUR/USD",
+                category: "forex",
+                timeframe: "4H Timeframe",
+                bias: "Bullish",
+                title: "Daily Liquidity Sweep & Order Block Test",
+                desc: "Price tapped into the 4H bullish order block following sell-side liquidity sweep below 1.0820. Targeting previous highs.",
+                keyLevel: "1.08250",
+                target: "1.09600",
+                stop: "1.07800",
+                svgType: "bullish"
+            },
+            {
+                pair: "GBP/USD",
+                category: "forex",
+                timeframe: "1H Timeframe",
+                bias: "Bearish",
+                title: "Fair Value Gap Rejection at London Open",
+                desc: "Rejection from 1H FVG following liquidity sweep at previous daily high. Expecting continuation towards session discount levels.",
+                keyLevel: "1.29850",
+                target: "1.28800",
+                stop: "1.30200",
+                svgType: "bearish"
+            },
+            {
+                pair: "BTC/USD",
+                category: "crypto",
+                timeframe: "Daily Timeframe",
+                bias: "Bullish",
+                title: "Macro S/R Flip & Volume Breakout",
+                desc: "Bitcoin holding key structural support after high-volume consolidation breakout. Targeting next Fibonacci expansion level.",
+                keyLevel: "$68,200",
+                target: "$74,500",
+                stop: "$66,000",
+                svgType: "bullish"
+            }
+        ];
+
+        const DEFAULT_VIP_SIGNALS = [
+            {
+                pair: "GBP/JPY",
+                type: "BUY",
+                entry: "194.200",
+                stop: "193.750",
+                target: "195.800",
+                rr: "1 : 3.55",
+                status: "Target 2 Hit"
+            },
+            {
+                pair: "EUR/AUD",
+                type: "BUY",
+                entry: "1.63200",
+                stop: "1.62800",
+                target: "1.64600",
+                rr: "1 : 3.50",
+                status: "Active"
+            },
+            {
+                pair: "AUD/USD",
+                type: "BUY",
+                entry: "0.66500",
+                stop: "0.66220",
+                target: "0.67340",
+                rr: "1 : 3.00",
+                status: "Active"
+            },
+            {
+                pair: "EUR/JPY",
+                type: "SELL",
+                entry: "162.800",
+                stop: "163.250",
+                target: "161.200",
+                rr: "1 : 3.55",
+                status: "Closed (BE)"
+            }
+        ];
+
+        let currentCategory = 'all';
+
+        // Helper: Simple CSV parser
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) return [];
+            const headers = lines[0].split(',').map(h => h.trim().replace(/^"(.*)"$/, '$1').toLowerCase());
+            
+            return lines.slice(1).map(line => {
+                const values = line.split(',').map(v => v.trim().replace(/^"(.*)"$/, '$1'));
+                const obj = {};
+                headers.forEach((h, i) => {
+                    obj[h] = values[i] || '';
+                });
+                return obj;
+            });
+        }
+
+        // Render Trade Ideas Grid
+        function renderTradeIdeas(data) {
+            const grid = document.getElementById('trade-ideas-grid');
+            grid.innerHTML = '';
+
+            data.forEach(item => {
+                const isBullish = (item.bias || '').toLowerCase().includes('bull');
+                const categoryClass = (item.category || 'forex').toLowerCase();
+                const card = document.createElement('div');
+                card.className = `trade-card ${categoryClass} bg-dark-card border border-dark-border rounded-2xl overflow-hidden hover:border-brand-500/50 transition-all group flex flex-col`;
+                
+                if (currentCategory !== 'all' && !card.classList.contains(currentCategory)) {
+                    card.style.display = 'none';
+                }
+
+                const svgPath = isBullish 
+                    ? '<path d="M 10,80 L 50,70 L 90,85 L 130,40 L 170,60 L 210,30 L 250,35 L 290,10" /><circle cx="130" cy="40" r="4" fill="#10b981" />'
+                    : '<path d="M 10,15 L 60,25 L 100,10 L 150,50 L 190,40 L 240,75 L 290,85" /><circle cx="150" cy="50" r="4" fill="#f43f5e" />';
+
+                const strokeColor = isBullish ? 'text-emerald-500/80' : 'text-rose-500/80';
+                const badgeColor = isBullish 
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                    : 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+
+                card.innerHTML = `
+                    <div class="p-6 pb-4">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="px-2.5 py-1 rounded bg-slate-800 text-xs font-semibold text-slate-300">${item.pair}</span>
+                                <span class="ml-2 text-xs text-slate-400">${item.timeframe || '4H'}</span>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase border ${badgeColor}">${item.bias}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-brand-400 transition-colors">${item.title}</h3>
+                        <p class="text-slate-400 text-sm line-clamp-2">${item.desc}</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 border-y border-dark-border/60 my-auto flex justify-center items-center relative min-h-[140px]">
+                        <svg class="w-full h-24 ${strokeColor}" viewBox="0 0 300 100" fill="none" stroke="currentColor" stroke-width="2">
+                            ${svgPath}
+                        </svg>
+                        <span class="absolute bottom-2 right-2 text-[10px] text-slate-500 font-mono">Nordic Yields Engine</span>
+                    </div>
+                    <div class="p-6 pt-4 flex items-center justify-between mt-auto">
+                        <div class="text-xs text-slate-400">
+                            Key Level: <span class="text-slate-200 font-mono font-semibold">${item.keyLevel}</span>
+                        </div>
+                        <button onclick="openModal('${item.pair} Analysis', '${item.desc.replace(/'/g, "\\'")}', '${item.keyLevel}', '${item.target}', '${item.stop}')" class="text-xs font-semibold text-brand-400 hover:text-brand-300 flex items-center gap-1">
+                            Expand Analysis <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // Render VIP Signals Table
+        function renderVIPSignals(data) {
+            const tbody = document.getElementById('vip-signals-table-body');
+            tbody.innerHTML = '';
+
+            data.forEach(sig => {
+                const isBuy = (sig.type || '').toUpperCase() === 'BUY';
+                const typeClass = isBuy ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400';
+                
+                let statusBadge = '';
+                const st = (sig.status || '').toLowerCase();
+                if (st.includes('target') || st.includes('tp') || st.includes('hit')) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center w-max gap-1"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> ${sig.status}</span>`;
+                } else if (st.includes('active')) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-brand-500/20 text-brand-400 border border-brand-500/30 flex items-center w-max gap-1"><i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> Active</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-700 text-slate-300 flex items-center w-max gap-1"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i> ${sig.status}</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/40 transition-colors';
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-white">${sig.pair}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 text-xs font-bold rounded ${typeClass}">${sig.type}</span></td>
+                    <td class="p-4 font-mono text-slate-300">${sig.entry}</td>
+                    <td class="p-4 font-mono text-slate-400">${sig.stop || sig.sl}</td>
+                    <td class="p-4 font-mono text-slate-300">${sig.target || sig.tp}</td>
+                    <td class="p-4 font-semibold text-slate-200">${sig.rr}</td>
+                    <td class="p-4">${statusBadge}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        // Data Engine Sync Logic
+        async function refreshDataEngine() {
+            const tradeIdeasUrl = localStorage.getItem('ny_trade_ideas_url');
+            const vipSignalsUrl = localStorage.getItem('ny_vip_signals_url');
+
+            // 1. Fetch Trade Ideas
+            if (tradeIdeasUrl) {
+                try {
+                    const res = await fetch(tradeIdeasUrl);
+                    const text = await res.text();
+                    let data = [];
+                    if (tradeIdeasUrl.endsWith('.json') || text.trim().startsWith('[')) {
+                        data = JSON.parse(text);
+                    } else {
+                        data = parseCSV(text);
+                    }
+                    if (data && data.length) {
+                        renderTradeIdeas(data);
+                        document.getElementById('trade-ideas-source-tag').innerText = 'Live Sheet';
+                        document.getElementById('trade-ideas-source-tag').className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono';
+                    }
+                } catch (e) {
+                    console.warn('Trade Ideas Live Sync failed, fallback to local data:', e);
+                    renderTradeIdeas(DEFAULT_TRADE_IDEAS);
+                }
+            } else {
+                renderTradeIdeas(DEFAULT_TRADE_IDEAS);
+            }
+
+            // 2. Fetch VIP Signals
+            if (vipSignalsUrl) {
+                try {
+                    const res = await fetch(vipSignalsUrl);
+                    const text = await res.text();
+                    let data = [];
+                    if (vipSignalsUrl.endsWith('.json') || text.trim().startsWith('[')) {
+                        data = JSON.parse(text);
+                    } else {
+                        data = parseCSV(text);
+                    }
+                    if (data && data.length) {
+                        renderVIPSignals(data);
+                        document.getElementById('signals-source-tag').innerText = 'Live Sheet';
+                        document.getElementById('signals-source-tag').className = 'px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono';
+                    }
+                } catch (e) {
+                    console.warn('VIP Signals Live Sync failed, fallback to local data:', e);
+                    renderVIPSignals(DEFAULT_VIP_SIGNALS);
+                }
+            } else {
+                renderVIPSignals(DEFAULT_VIP_SIGNALS);
+            }
+
+            const now = new Date();
+            document.getElementById('last-updated-time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Filter Trade Ideas Tab Logic
+        function filterTradeIdeas(category, btn) {
+            currentCategory = category;
+            const tabs = document.querySelectorAll('.trade-tab');
+            tabs.forEach(t => {
+                t.classList.remove('bg-brand-600', 'text-white');
+                t.classList.add('bg-dark-card', 'text-slate-400');
+            });
+            btn.classList.remove('bg-dark-card', 'text-slate-400');
+            btn.classList.add('bg-brand-600', 'text-white');
+
+            const cards = document.querySelectorAll('.trade-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.classList.contains(category)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Modal Handlers
+        function openModal(title, desc, entry, target, stop) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerText = desc;
+            document.getElementById('modal-entry').innerText = entry;
+            document.getElementById('modal-target').innerText = target;
+            document.getElementById('modal-stop').innerText = stop;
+            document.getElementById('trade-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('trade-modal').classList.add('hidden');
+        }
+
+        function openAdminModal() {
+            document.getElementById('cfg-trade-ideas-url').value = localStorage.getItem('ny_trade_ideas_url') || '';
+            document.getElementById('cfg-vip-signals-url').value = localStorage.getItem('ny_vip_signals_url') || '';
+            document.getElementById('admin-modal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-modal').classList.add('hidden');
+        }
+
+        function saveAdminConfig() {
+            const ti = document.getElementById('cfg-trade-ideas-url').value.trim();
+            const vs = document.getElementById('cfg-vip-signals-url').value.trim();
+
+            if (ti) localStorage.setItem('ny_trade_ideas_url', ti);
+            else localStorage.removeItem('ny_trade_ideas_url');
+
+            if (vs) localStorage.setItem('ny_vip_signals_url', vs);
+            else localStorage.removeItem('ny_vip_signals_url');
+
+            closeAdminModal();
+            refreshDataEngine();
+        }
+
+        function clearAdminConfig() {
+            localStorage.removeItem('ny_trade_ideas_url');
+            localStorage.removeItem('ny_vip_signals_url');
+            document.getElementById('cfg-trade-ideas-url').value = '';
+            document.getElementById('cfg-vip-signals-url').value = '';
+            closeAdminModal();
+            refreshDataEngine();
+        }
+
+        // Mobile Menu Event
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            refreshDataEngine();
+        });
+    </script>
+</body>
+</html>
